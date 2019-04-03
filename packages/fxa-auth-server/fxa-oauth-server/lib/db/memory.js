@@ -204,7 +204,6 @@ MemoryStore.prototype = {
 
         return clients.map(function(id) {
           var client = self.clients[id];
-
           return {
             id: client.id,
             name: client.name,
@@ -217,7 +216,14 @@ MemoryStore.prototype = {
       });
   },
   removeClient: function removeClient(id) {
-    delete this.clients[unbuf(id)];
+    delete this.clients[id];
+    for (const key in this.clientDevelopers) {
+      var entry = this.clientDevelopers[key];
+      if (unbuf(entry.clientId) === id) {
+        delete this.clientDevelopers[key];
+      }
+    }
+
     return P.resolve();
   },
   generateCode: function generateCode(codeObj) {
