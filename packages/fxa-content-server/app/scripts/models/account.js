@@ -944,6 +944,17 @@ const Account = Backbone.Model.extend({
       });
   },
 
+  fetchClients () {
+    return this._fxaClient.connectedClientList(this.get('sessionToken'))
+      .then((clients) => {
+        clients.map((item) => {
+          item.genericOS = UserAgent.toGenericOSName(item.os);
+        })
+
+        return clients;
+      })
+  },
+
   /**
      * Delete the device from the account
      *

@@ -621,6 +621,10 @@ var User = Backbone.Model.extend({
     return account.fetchSessions(sessions);
   },
 
+  fetchAccountClients (account, clients) {
+    return account.fetchClients(clients);
+  },
+
   /**
    * Destroy a device on the given account. If the current device
    * is destroyed, sign out the user.

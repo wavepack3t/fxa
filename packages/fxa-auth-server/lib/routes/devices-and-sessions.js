@@ -497,6 +497,95 @@ module.exports = (log, db, config, customs, push, pushbox, devices, oauthdb) => 
       }
     },
     {
+      /*
+        The connected client list aims to provide the following:
+
+        * One entry for each device record (Firefox, Fenix, Reference Browser)
+        * One entry for each OAuth refresh token that isn't owned by a device record (Monitor, Send, Lockbox)
+        * One entry for each OAuth client_id that has live access tokens that don't tie back to a refresh token (Pocket)
+        * One entry for each sessionToken that isn't owned by a device record (Web Sessions)
+       */
+      method: 'GET',
+      path: '/account/connected_clients',
+      options: {
+        auth: {
+          strategies: [
+            'sessionToken',
+            // this endpoint is only used by the content server
+            // no refreshToken access here
+          ]
+        },
+        response: {
+          schema: isA.array().items(isA.object({
+            id: isA.string().optional(),
+            name: isA.string().optional(),
+            clientType: isA.string().optional(),
+            deviceType: isA.string().optional(),
+            isCurrentDevice: isA.boolean().optional(),
+            location: DEVICES_SCHEMA.location, // missing
+            createdTime: isA.number().optional(),
+            createdTimeFormatted: isA.string().optional().allow(''),
+            lastAccessTime: isA.number().optional().allow(null),
+            lastAccessTimeFormatted: isA.string().optional().allow(''),
+            approximateLastAccessTime: isA.number().min(earliestSaneTimestamp).optional(),
+            approximateLastAccessTimeFormatted: isA.string().optional().allow(''),
+            os: isA.string().optional().allow(''),
+            userAgent: isA.string().optional().allow(''),
+          }))
+        }
+      },
+      handler: async function (request) {
+        log.begin('Account.connected_clients', request);
+
+        const sessionToken = request.auth.credentials;
+        const uid = sessionToken.uid;
+
+        function mapToClient(item) {
+          let userAgent;
+          if (! item.uaBrowser) {
+            userAgent = '';
+          } else if (! item.uaBrowserVersion) {
+            userAgent = item.uaBrowser;
+          } else {
+            const { uaBrowser: browser, uaBrowserVersion: version } = item;
+            userAgent = `${browser} ${version.split('.')[0]}`;
+          }
+
+          return Object.assign({
+            id: item.id,
+            name: item.name,
+            clientType: 'device',
+            deviceType: item.type || 'desktop',
+            isCurrentDevice: item.id === sessionToken.id,
+            location: marshallLocation(item.location, request), // missing
+            createdTime: item.createdAt,
+            createdTimeFormatted: localizeTimestamp.format(
+              item.createdAt,
+              request.headers['accept-language']
+            ),
+            lastAccessTime: 1,
+            lastAccessTimeFormatted: '1',
+            os: item.uaOS || '',
+            userAgent: userAgent || '',
+          }, marshallLastAccessTime(item.lastAccessTime, request));
+        }
+
+        let devices = await db.devices(uid);
+
+        devices = devices.map(mapToClient);
+        const refreshTokens = await oauthdb.getRefreshTokens(sessionToken, uid);
+        // const accessTokens = await db.accessTokens(uid);
+        // const webSessions = await db.webSessions(uid);
+
+        const connectedClients = [
+          ...devices
+        ];
+
+        return connectedClients;
+      }
+    },
+    {
+      // TODO: deprecate this once https://github.com/mozilla/fxa/issues/466 lands and rides a train
       method: 'GET',
       path: '/account/sessions',
       options: {

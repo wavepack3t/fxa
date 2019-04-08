@@ -88,6 +88,11 @@ exports.routes = [
     config: require('./routes/client-tokens/list')
   },
   {
+    method: 'GET',
+    path: v('/tokens'),
+    config: require('./routes/client-tokens/tokens')
+  },
+  {
     method: 'DELETE',
     path: v('/client-tokens/{client_id}'),
     config: require('./routes/client-tokens/delete')

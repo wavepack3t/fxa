@@ -33,6 +33,7 @@ module.exports = (log, config) => {
     grantTokensFromRefreshToken: require('./grant-tokens-from-refresh-token')(config),
     grantTokensFromCredentials: require('./grant-tokens-from-credentials')(config),
     checkAccessToken: require('./check-access-token')(config),
+    getRefreshTokens: require('./get-refresh-tokens-by-uid')(config),
   });
 
   const api = new OAuthAPI(config.oauth.url, config.oauth.poolee);
@@ -119,6 +120,15 @@ module.exports = (log, config) => {
     async checkAccessToken(token) {
       try {
         return await api.checkAccessToken(token);
+      } catch (err) {
+        throw mapOAuthError(log, err);
+      }
+    },
+
+    async getRefreshTokens(sessionToken, oauthParams) {
+      oauthParams.assertion = await makeAssertionJWT(config, sessionToken);
+      try {
+        return await api.getRefreshTokens(oauthParams);
       } catch (err) {
         throw mapOAuthError(log, err);
       }

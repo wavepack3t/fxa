@@ -504,6 +504,7 @@ const conf = module.exports = convict({
             'https://lockbox.firefox.com/fxa/android-redirect.html',
             'https://accounts.firefox.com/oauth/success/a2270f727f45f648', // Fenix
             'https://accounts.firefox.com/oauth/success/3c49430b43dfba77', // Reference browser
+            'http://127.0.0.1:3030/oauth/success/3c49430b43dfba77', //
             'urn:ietf:wg:oauth:2.0:oob:pair-auth-webchannel'
           ]
         },

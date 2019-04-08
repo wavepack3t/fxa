@@ -294,6 +294,23 @@ MemoryStore.prototype = {
     return P.resolve(helpers.aggregateActiveClients(activeClientTokens));
   },
 
+  getAllTokensByUid: function getAllTokensByUid(uid) {
+    if (! uid) {
+      return P.reject(new Error('uid are required'));
+    }
+
+    const usersRefreshTokens = [];
+    const ids = Object.keys(this.refreshTokens);
+    for (var i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      if (this.refreshTokens[id].userId === uid) {
+        usersRefreshTokens.push(this.refreshTokens[i]);
+      }
+    }
+
+    return usersRefreshTokens;
+  },
+
   /**
    * Delete all authorization grants for some clientId and uid.
    *

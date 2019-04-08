@@ -256,8 +256,9 @@ const View = FormView.extend({
   _fetchAttachedClients () {
     const start = Date.now();
     return this._attachedClients.fetchClients({
-      oAuthApps: true,
-      sessions: true
+      oAuthApps: false,
+      sessions: false,
+      connectedClients: true,
     }, this.user).then(() => {
       // log the number of items
       const numOfClients = this._attachedClients.length;

@@ -221,6 +221,9 @@ const QUERY_ACTIVE_CLIENT_TOKENS_BY_UID =
   'SELECT tokens.clientId AS id, tokens.createdAt, tokens.scope, clients.name ' +
   'FROM tokens LEFT OUTER JOIN clients ON clients.id = tokens.clientId ' +
   'WHERE tokens.userId=? AND tokens.expiresAt > NOW() AND clients.canGrant = 0;';
+const QUERY_REFRESH_TOKENS_BY_UID =
+  'SELECT FROM refreshTokens ' +
+  'WHERE userId=? ;';
 const DELETE_ACTIVE_CODES_BY_CLIENT_AND_UID =
   'DELETE FROM codes WHERE clientId=? AND userId=?';
 const DELETE_ACTIVE_TOKENS_BY_CLIENT_AND_UID =
@@ -505,6 +508,12 @@ MysqlStore.prototype = {
       });
       return helpers.aggregateActiveClients(activeClientTokens);
     });
+  },
+
+  getAllTokensByUid: function getAllTokensByUid(uid) {
+    return this._read(QUERY_REFRESH_TOKENS_BY_UID, [
+      buf(uid)
+    ])
   },
 
   /**

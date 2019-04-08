@@ -814,6 +814,8 @@ FxaClientWrapper.prototype = {
    */
   sessions: createClientDelegate('sessions'),
 
+  connectedClientList: createClientDelegate('connectedClientList'),
+
   /**
    * Unregister an existing device
    *

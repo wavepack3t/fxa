@@ -265,6 +265,12 @@ module.exports = (
       );
   };
 
+
+  SAFE_URLS.connectedClients = new SafeUrl('/account/:uid/connectedClients', 'db.connectedClients');
+  DB.prototype.connectedClients = function (uid) {
+    log.trace('DB.connectedClients', { uid });
+  };
+
   SAFE_URLS.sessions = new SafeUrl('/account/:uid/sessions', 'db.sessions');
   DB.prototype.sessions = function (uid) {
     log.trace('DB.sessions', { uid });

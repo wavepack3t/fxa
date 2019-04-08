@@ -1390,6 +1390,28 @@ define([
       });
   };
 
+
+  /**
+   * Get a list of all connected clients for a user
+   *
+   * @method connectedClientList
+   * @param {String} sessionToken sessionToken obtained from signIn
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   */
+  FxAccountClient.prototype.connectedClientList = function (sessionToken) {
+    var request = this.request;
+
+    return Promise.resolve()
+      .then(function () {
+        required(sessionToken, 'sessionToken');
+
+        return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE);
+      })
+      .then(function(creds) {
+        return request.send('/account/connected_clients', 'GET', creds);
+      });
+  };
+
   /**
    * Get a list of user's sessions
    *

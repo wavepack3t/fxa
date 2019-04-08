@@ -42,6 +42,12 @@ var AttachedClients = Backbone.Collection.extend({
       fetchItems.push(user.fetchAccountSessions(account));
     }
 
+    if (clientTypes.connectedClients) {
+      fetchItems.push(user.fetchAccountClients(account));
+    }
+
+
+
     return Promise.all(fetchItems)
       .then((results) => {
         // need to reset and sync add the models,
