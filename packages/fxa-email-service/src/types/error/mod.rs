@@ -93,6 +93,8 @@ impl From<AppErrorKind> for AppError {
         };
 
         if capture_in_sentry {
+            println!("{}", error);
+            println!("{:?}", error);
             sentry::integrations::failure::capture_fail(&error);
         }
 
@@ -132,8 +134,11 @@ impl<'r> Responder<'r> for AppError {
     fn respond_to(self, request: &Request) -> response::Result<'r> {
         match request.guard::<State<MozlogLogger>>() {
             Outcome::Success(logger) => {
-                let log = MozlogLogger::with_app_error(&logger, &self)
-                    .map_err(|_| Status::InternalServerError)?;
+                let log = MozlogLogger::with_app_error(&logger, &self).map_err(|error| {
+                    println!("{}", error);
+                    println!("{:?}", error);
+                    Status::InternalServerError
+                })?;
                 slog_error!(log, "{}", "Request errored");
             }
             _ => panic!("Internal error: No managed MozlogLogger"),
