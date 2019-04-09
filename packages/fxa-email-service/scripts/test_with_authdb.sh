@@ -1,18 +1,16 @@
 #!/bin/sh
 
-DB_REPO=fxa-auth-db-mysql
+set -e
 
-if [ ! -e "$DB_REPO" ]; then
-  git clone "https://github.com/mozilla/$DB_REPO.git"
-fi
+DB_REPO=fxa-auth-db-mysql
 
 RUNNING_DB_SERVERS=`ps -ef | grep "[n]ode bin/server" | wc -l`
 if [ "$RUNNING_DB_SERVERS" -eq "0" ]; then
-  cd "$DB_REPO"
-  npm i
+  cd "../$DB_REPO"
+  npm ci
   node bin/db_patcher
-  node bin/server 2>&1 > "$DB_REPO.log" &
-  cd ..
+  node bin/server 2>&1 > "../$DB_REPO.log" &
+  cd -
 fi
 
 sleep 2
