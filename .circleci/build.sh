@@ -13,8 +13,9 @@ if grep -e "$MODULE" -e 'all' $DIR/../packages/test.list; then
   if [[ -d config ]]; then
     cp $DIR/../packages/version.json config
   fi
-  ls -l $DIR/../packages/version.json
-  ls -l version.json config/version.json
+  ls -l $DIR/../packages/version.json    || echo no $DIR/../packages/version.json
+  ls -l version.json                     || echo no version.json
+  ls -l config/version.json              || echo no config/version.json
   echo DIR $DIR
 
   if [ "${MODULE}" == "fxa-auth-server" ]; then
