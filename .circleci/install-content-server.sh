@@ -7,6 +7,7 @@ if grep -e "fxa-content-server" -e 'all' $DIR/../packages/test.list; then
   mkdir -p config
   cp ../version.json ./
   cp ../version.json server/config
+
   cd $DIR/..
   CIRCLECI=false npm install
   npx pm2 kill
