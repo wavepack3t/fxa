@@ -90,7 +90,7 @@ const takeScreenshot = function () {
   return function () {
     return this.parent.takeScreenshot()
       .then(function (buffer) {
-        const screenCaptureHost = 'https://screencap.co.uk';
+        const screenCaptureHost = 'http://127.0.0.1:10138';
         return got.post(`${screenCaptureHost}/png`, { body: buffer, followRedirect: false })
           .then((res) => {
             console.log(`Screenshot saved at: ${screenCaptureHost}${res.headers.location}`);
@@ -165,7 +165,8 @@ const visibleByQSA = thenify(function (selector, options = {}) {
 const testElementExists = thenify(function (selector) {
   return this.parent
     .findByCssSelector(selector)
-    .end();
+    .end()
+    .then(takeScreenshot())
 });
 
 /**
@@ -183,6 +184,7 @@ const click = thenify(function (selector, readySelector) {
   // Sometimes clicks do not register if the element is in the middle of an animation.
     .then(visibleByQSA(selector))
     .click()
+    .then(takeScreenshot())
     .then(null, (err) => {
       // If element is obscured (possibly by a verification message covering it), attempt
       // to scroll to the top of page where it might be visible.
