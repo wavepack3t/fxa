@@ -25,7 +25,7 @@
 //! [queues]: ../fxa_email_queues/index.html
 
 #![feature(decl_macro)]
-#![feature(plugin)]
+#![feature(proc_macro_hygiene)]
 #![feature(try_from)]
 #![feature(type_ascription)]
 #![plugin(rocket_codegen)]
@@ -51,6 +51,7 @@ extern crate rand;
 extern crate redis;
 extern crate regex;
 extern crate reqwest;
+#[macro_use]
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
