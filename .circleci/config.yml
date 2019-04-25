@@ -247,6 +247,18 @@ jobs:
           ../../.circleci/build.sh fxa-email-service
           ../../.circleci/deploy.sh fxa-email-service
 
+  fxa-email-service-audit:
+    docker:
+      - image: circleci/rust
+    working_directory: ~/project/packages/fxa-email-service
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: |
+          rm rust-toolchain
+          cargo install cargo-audit
+          cargo audit
+
   docs:
     docker:
       - image: circleci/node:10
@@ -335,6 +347,9 @@ workflows:
           requires:
             - install
       - fxa-email-service:
+          requires:
+            - install
+      - fxa-email-service-audit:
           requires:
             - install
       - docs:
