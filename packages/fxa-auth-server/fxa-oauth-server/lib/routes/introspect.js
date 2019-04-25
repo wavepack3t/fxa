@@ -5,10 +5,10 @@
 /*jshint camelcase: false*/
 const Joi = require('joi');
 const db = require('../db');
-const encrypt = require('../encrypt');
 const validators = require('../validators');
 const hex = require('buf').to.hex;
 const AppError = require('../error');
+const { getHashedAccessToken } = require('../token');
 
 const PAYLOAD_SCHEMA = Joi.object({
   token: Joi.string().required(),
@@ -39,7 +39,7 @@ module.exports = {
   handler: async function introspectEndpoint(req) {
     let token;
     let tokenType = req.payload.token_type;
-    const tokenId = encrypt.hash(req.payload.token);
+    const tokenId = getHashedAccessToken(req.payload.token);
     if (tokenType === 'access_token' || ! tokenType) {
       token = await db.getAccessToken(tokenId);
       if (token) {

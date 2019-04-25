@@ -118,13 +118,15 @@ module.exports.validateRequestedGrant = async function validateRequestedGrant(ve
 // the specified grant has been sufficiently vetted by calling code.
 module.exports.generateTokens = async function generateTokens(grant) {
   // We always generate an access_token.
-  const access = await db.generateAccessToken(grant);
+  const dbToken = await db.generateAccessToken(grant);
+  const accessToken = await generateAccessToken(dbToken.token.toString('hex'), grant);
+
   const result = {
-    access_token: access.token.toString('hex'),
-    token_type: access.type,
-    scope: access.scope.toString()
+    access_token: accessToken,
+    token_type: dbToken.type,
+    scope: grant.scope.toString()
   };
-  result.expires_in = grant.ttl || Math.floor((access.expiresAt - Date.now()) / 1000);
+  result.expires_in = grant.ttl || Math.floor((dbToken.expiresAt - Date.now()) / 1000);
   if (grant.authAt) {
     result.auth_at = grant.authAt;
   }
@@ -138,9 +140,10 @@ module.exports.generateTokens = async function generateTokens(grant) {
   }
   // Maybe also generate an idToken?
   if (grant.scope && grant.scope.contains(SCOPE_OPENID)) {
-    result.id_token = await generateIdToken(grant, access);
+    result.id_token = await generateIdToken(grant, dbToken.token);
   }
 
+  logger.info('tokens', result);
   amplitude('token.created', {
     service: hex(grant.clientId),
     uid: hex(grant.userId)
@@ -149,15 +152,15 @@ module.exports.generateTokens = async function generateTokens(grant) {
   return result;
 };
 
-function generateIdToken(grant, access) {
+function generateIdToken(grant, accessToken) {
   var now = Math.floor(Date.now() / 1000);
   var claims = {
-    sub: hex(grant.userId),
+    at_hash: util.generateTokenHash(accessToken),
     aud: hex(grant.clientId),
-    iss: ID_TOKEN_ISSUER,
-    iat: now,
     exp: now + ID_TOKEN_EXPIRATION,
-    at_hash: util.generateTokenHash(access.token)
+    iat: now,
+    iss: ID_TOKEN_ISSUER,
+    sub: hex(grant.userId),
   };
   if (grant.amr) {
     claims.amr = grant.amr;
@@ -168,4 +171,30 @@ function generateIdToken(grant, access) {
   }
 
   return ID_TOKEN_KEY.sign(claims);
+}
+
+function generateAccessToken(id, grant) {
+  var now = Math.floor(Date.now() / 1000);
+
+  const claims = {
+    aud: hex(grant.clientId),
+    auth_time: grant.authAt,
+    client_id: hex(grant.clientId),
+    exp: now + ID_TOKEN_EXPIRATION,
+    iat: now,
+    iss: ID_TOKEN_ISSUER,
+    jti: id,
+    sub: hex(grant.userId),
+  };
+
+  if (grant.amr) {
+    claims.amr = grant.amr;
+  }
+  if (grant.aal) {
+    claims['fxa-aal'] = grant.aal;
+    claims.acr = 'AAL' + grant.aal;
+  }
+
+  // TODO encrypt and sign this thing!
+  return JSON.stringify(claims);
 }
