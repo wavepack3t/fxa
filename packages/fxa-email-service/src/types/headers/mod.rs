@@ -25,7 +25,11 @@ use std::{
 use emailmessage::header::Header;
 use hyperx::{
     self,
-    header::{parsing::from_one_raw_str, Formatter, Raw as RawHeader},
+    header::{
+        parsing::from_one_raw_str,
+        Formatter,
+        Raw as RawHeader
+    },
 };
 
 macro_rules! custom_header {

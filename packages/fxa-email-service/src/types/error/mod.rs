@@ -23,7 +23,7 @@ use rocket::{
     response::{self, Responder, Response},
     Outcome, Request, State,
 };
-use rocket_contrib::Json;
+use rocket_contrib::json::Json;
 use sendgrid::errors::SendgridError;
 use serde::ser::{Serialize, SerializeMap, Serializer};
 use serde_json::{map::Map, ser::to_string, Error as JsonError, Value};

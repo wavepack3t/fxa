@@ -6,11 +6,11 @@
 //! for the `POST /send` endpoint.
 
 use rocket::{
-    data::{self, FromData},
+    data::{self, FromDataSimple},
     http::Status,
     Data, Request, State,
 };
-use rocket_contrib::Json;
+use rocket_contrib::json::{Json, JsonValue};
 
 use crate::{
     db::{auth_db::DbClient, delivery_problems::DeliveryProblems, message_data::MessageData},
@@ -42,7 +42,7 @@ struct Email {
     metadata: Option<String>,
 }
 
-impl FromData for Email {
+impl FromDataSimple for Email {
     type Error = AppError;
 
     fn from_data(request: &Request, data: Data) -> data::Outcome<Self, Self::Error> {
@@ -64,7 +64,7 @@ fn handler(
     logger: State<MozlogLogger>,
     message_data: State<MessageData>,
     providers: State<Providers>,
-) -> AppResult<Json> {
+) -> AppResult<JsonValue> {
     let email = email?;
 
     bounces.check(&email.to)?;
@@ -100,7 +100,13 @@ fn handler(
                         .expect("MozlogLogger::with_request error");
                     slog_error!(log, "{}", "Request errored");
                 });
-            Json(json!({ "messageId": message_id }))
+            json!({ "messageId": message_id })
         })
         .map_err(|error| error)
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct SendResponse {
+    #[serde(rename = "messageId")]
+    pub message_id: String,
 }
