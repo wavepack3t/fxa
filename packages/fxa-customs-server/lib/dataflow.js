@@ -19,7 +19,10 @@
  */
 
 module.exports = function (config, log, fetchRecords) {
+  log.info({ op: 'dataflow.debug', config: config.dataflow })
+
   if (! config.dataflow.enabled) {
+    log.info({ op: 'dataflow.debug', msg: 'not enabled; bailing out' })
     // no-op if not enabled
     return
   }
@@ -30,15 +33,21 @@ module.exports = function (config, log, fetchRecords) {
   } = config.dataflow.gcpPubSub
 
   if (! projectId) {
+    log.info({ op: 'dataflow.debug', msg: 'Missing configuration option, `dataflow.gcpPubSub.projectId`' })
     throw new Error('Missing configuration option, `dataflow.gcpPubSub.projectId`')
   }
 
   if (! subscriptionName) {
+    log.info({ op: 'dataflow.debug', msg: 'Missing configuration option, `dataflow.gcpPubSub.subscriptionName`' })
     throw new Error('Missing configuration option, `dataflow.gcpPubSub.subscriptionName`')
   }
 
+  log.info({ op: 'dataflow.debug', msg: `loading...` })
   const { PubSub } = require('@google-cloud/pubsub')
+  log.info({ op: 'dataflow.debug', msg: `loaded: ${PubSub}` })
   const pubsub = new PubSub({ projectId })
+  log.info({ op: 'dataflow.debug', msg: `got connected: ${pubsub}` })
+
   let messageCount = 0
 
   const subscription = pubsub.subscription(subscriptionName)
