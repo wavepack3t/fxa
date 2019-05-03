@@ -42,7 +42,7 @@ module.exports = function (config, log, fetchRecords) {
     throw new Error('Missing configuration option, `dataflow.gcpPubSub.subscriptionName`')
   }
 
-  log.info({ op: 'dataflow.debug', msg: `loading...` })
+  log.info({ op: 'dataflow.debug', msg: 'loading...' })
   const { PubSub } = require('@google-cloud/pubsub')
   log.info({ op: 'dataflow.debug', msg: `loaded: ${PubSub}` })
   const pubsub = new PubSub({ projectId })
