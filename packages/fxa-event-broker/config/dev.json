@@ -1,0 +1,5 @@
+{
+  "aws": {
+    "incomingqueue": "https://sqs.us-east-1.amazonaws.com/927034868273/fxa-event-broker-dev"
+  }
+}
