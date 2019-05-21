@@ -45,7 +45,7 @@ const bailAfterFirstFailure = args.bailAfterFirstFailure === 'true';
 const config = {
   asyncTimeout: asyncTimeout,
   bail: bailAfterFirstFailure,
-  defaultTimeout: 45000, // 30 seconds just isn't long enough for some tests.
+  defaultTimeout: 45000 * 30000, // 30 seconds just isn't long enough for some tests.
   environments: {
     browserName: 'firefox',
   },

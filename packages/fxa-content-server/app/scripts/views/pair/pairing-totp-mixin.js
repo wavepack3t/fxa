@@ -18,13 +18,10 @@ export default function () {
       return account.checkTotpTokenExists().then((result) => {
         // pairing is disabled for accounts with 2FA
         if (result.exists) {
-
-
+          this.replaceCurrentPage('pair/auth/totp');
           // this.replaceCurrentPage('pair/failure', {
           //   error: AuthErrors.toError('TOTP_PAIRING_NOT_SUPPORTED'),
           // });
-
-
         }
       });
     }

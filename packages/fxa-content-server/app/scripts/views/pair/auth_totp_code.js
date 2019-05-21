@@ -2,47 +2,63 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { assign } from 'underscore';
+import AuthErrors from 'lib/auth-errors';
 import Cocktail from 'cocktail';
-import DeviceBeingPairedMixin from './device-being-paired-mixin';
-import PairingTotpMixin from './pairing-totp-mixin';
 import FormView from '../form';
-import preventDefaultThen from '../decorators/prevent_default_then';
-import Template from '../../templates/pair/auth_allow.mustache';
+import ServiceMixin from '../mixins/service-mixin';
+import Template from '../../templates/sign_in_totp_code.mustache';
+import VerificationReasonMixin from '../mixins/verification-reason-mixin';
+import FlowEventsMixin from '../mixins/flow-events-mixin';
 
-class PairAuthTotpCodeView extends FormView {
-  template = Template;
+const CODE_INPUT_SELECTOR = 'input.totp-code';
 
-  events = assign(this.events, {
-    'click #cancel': preventDefaultThen('cancel')
-  });
+const View = FormView.extend({
+  className: 'sign-in-totp-code',
+  template: Template,
 
-  setInitialContext (context) {
-    context.set({
-      email: this.broker.get('browserSignedInAccount').email,
-    });
-  }
+  getAccount () {
+    return this.model.get('account') || this.getSignedInAccount();
+  },
 
   beforeRender () {
-    this.listenTo(this.broker, 'error', this.displayError);
-
-    return this.checkTotpStatus();
-  }
+    // user cannot confirm if they have not initiated a sign in.
+    const account = this.getAccount();
+    if (! account || ! account.get('sessionToken')) {
+      this.navigate(this._getAuthPage());
+    }
+  },
 
   submit () {
-    return this.invokeBrokerMethod('afterPairAuthAllow');
-  }
+    const account = this.getAccount();
+    const code = this.getElementValue('input.totp-code');
+    return account.verifyTotpCode(code, 'pair')
+      .then((result) => {
+        if (result.success) {
+          this.logFlowEvent('success', this.viewName);
+          return this.replaceCurrentPage('/pair');
+        } else {
+          throw AuthErrors.toError('INVALID_TOTP_CODE');
+        }
+      })
+      .catch((err) => this.showValidationError(this.$(CODE_INPUT_SELECTOR), err));
+  },
 
-  cancel () {
-    this.replaceCurrentPage('pair/failure');
-    return this.invokeBrokerMethod('afterPairAuthDecline');
+  /**
+   * Get the URL of the page for users that
+   * must enter their password.
+   *
+   * @returns {String}
+   */
+  _getAuthPage () {
+    return this.model.get('lastPage') === 'force_auth' ? 'force_auth' : 'signin';
   }
-}
+});
 
 Cocktail.mixin(
-  PairAuthTotpCodeView,
-  PairingTotpMixin(),
-  DeviceBeingPairedMixin(),
+  View,
+  FlowEventsMixin,
+  ServiceMixin,
+  VerificationReasonMixin
 );
 
-export default PairAuthTotpCodeView;
+export default View;

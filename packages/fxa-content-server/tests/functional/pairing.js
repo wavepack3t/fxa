@@ -101,6 +101,7 @@ registerSuite('pairing', {
   tests: {
     'it can pair': function () {
       email = TestHelpers.createEmail();
+      let secret;
 
       return this.remote
         .then(createUser(email, PASSWORD, { preVerified: true }))
@@ -150,11 +151,18 @@ registerSuite('pairing', {
         .findByCssSelector(selectors.TOTP.MANUAL_CODE)
         .getVisibleText()
         .then((secretKey) => {
-          return this.remote.then(confirmTotpCode(secretKey));
+          secret = secretKey;
+
+          return this.remote.then(confirmTotpCode(secret));
         })
         .end()
+        .then(openPage(`${config.fxaContentRoot}pair`, selectors.TOTP_SIGNIN.HEADER))
 
-        .then(openPage(`${config.fxaContentRoot}pair`, selectors.PAIRING.PAIR_FAILURE));
+        .sleep(3000 * 1000)
+        .then(() => {
+          return this.remote.then(confirmTotpCode(secret));
+        })
+        .sleep(3000 * 1000);
     },
 
     'handles invalid clients': function () {
