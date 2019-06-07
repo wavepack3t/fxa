@@ -119,7 +119,10 @@ if (args.unit) {
   config.functionalSuites.unshift('tests/functional/mocha.js');
 }
 
-config.capabilities = {};
+config.capabilities = {
+  usesHandleParameter: true,
+  usesWebDriverWindowHandleCommands: true,
+};
 config.capabilities['moz:firefoxOptions'] = {};
 // to create a profile, give it the `config` option.
 config.capabilities['moz:firefoxOptions'].profile = firefoxProfile(config); //eslint-disable-line camelcase
