@@ -9,6 +9,7 @@
 'use strict';
 const _ = require('lodash');
 const joi = require('joi');
+const logger = require('../logging/log')('');
 const url = require('url');
 const validation = require('../validation');
 
@@ -56,12 +57,6 @@ const BODY_SCHEMA = {
 };
 
 module.exports = function (options) {
-  options = options || {};
-
-  const write = options.write || function (entry) {
-    process.stderr.write(JSON.stringify(entry) + '\n');
-  };
-
   return {
     method: 'post',
     path: options.path,
@@ -80,7 +75,6 @@ module.exports = function (options) {
         blocked: report['blocked-uri'],
         column: report['column-number'],
         line: report['line-number'],
-        op: options.op || 'server.csp',
         referrer: stripPIIFromUrl(report['referrer']),
         sample: report['script-sample'],
         source: stripPIIFromUrl(report['source-file']),
@@ -88,7 +82,7 @@ module.exports = function (options) {
         violated: report['violated-directive'],
       };
 
-      write(entry);
+      logger.info(options.op, entry);
     }
   };
 };
