@@ -19,18 +19,18 @@
         {{#clients}}
 
             {{#isDevice}}
-              <li class="client {{type}} client-device {{#isCurrentDevice}}client-current{{/isCurrentDevice}}"
+              <li class="client {{type}} client-device {{#isCurrentSession}}client-current{{/isCurrentSession}}"
                 {{#genericOS}}data-os="{{genericOS}}"{{/genericOS}}
                 data-name="{{name}}"
                 title="{{title}}"
                 id="{{id}}">
                 <div class="client-name">{{name}}</div>
-                {{#isCurrentDevice}}
+                {{#isCurrentSession}}
                     <div class="device-current">{{#t}}Current device{{/t}}</div>
-                {{/isCurrentDevice}}
-                {{^isCurrentDevice}}
+                {{/isCurrentSession}}
+                {{^isCurrentSession}}
                     <div class="last-connected">{{lastAccessTimeFormatted}}</div>
-                {{/isCurrentDevice}}
+                {{/isCurrentSession}}
                 <button class="settings-button warning-button client-disconnect" data-id="{{id}}" data-type="{{clientType}}">{{#t}}Disconnect…{{/t}}</button>
               </li>
             {{/isDevice}}
@@ -41,12 +41,12 @@
                     data-name="{{name}}"
                     id="{{id}}">
                     <div class="client-name" title="{{title}}">{{title}}</div>
-                  {{#isCurrentDevice}}
+                  {{#isCurrentSession}}
                     <div class="device-current">{{#t}}Current session{{/t}}</div>
-                  {{/isCurrentDevice}}
-                  {{^isCurrentDevice}}
+                  {{/isCurrentSession}}
+                  {{^isCurrentSession}}
                     <div class="last-connected">{{lastAccessTimeFormatted}}</div>
-                  {{/isCurrentDevice}}
+                  {{/isCurrentSession}}
                     <button class="settings-button warning-button client-disconnect" data-id="{{id}}" data-type="{{clientType}}">{{#t}}Disconnect{{/t}}</button>
                 </li>
             {{/isWebSession}}

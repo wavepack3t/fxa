@@ -5,12 +5,11 @@
 import Account from 'models/account';
 import { assert } from 'chai';
 import AuthErrors from 'lib/auth-errors';
+//import AttachedClient from 'models/attached-client';
 import Constants from 'lib/constants';
-import Device from 'models/device';
 import FxaClientWrapper from 'lib/fxa-client';
-import OAuthApp from 'models/oauth-app';
 import OAuthClient from 'lib/oauth-client';
-import OAuthErrors from 'lib/oauth-errors';
+//import OAuthErrors from 'lib/oauth-errors';
 import OAuthToken from 'models/oauth-token';
 import ProfileClient from 'lib/profile-client';
 import ProfileErrors from 'lib/profile-errors';
@@ -20,7 +19,6 @@ import SignInReasons from 'lib/sign-in-reasons';
 import sinon from 'sinon';
 import VerificationMethods from 'lib/verification-methods';
 import VerificationReasons from 'lib/verification-reasons';
-import WebSession from 'models/web-session';
 
 describe('models/account', function () {
   var account;
@@ -42,7 +40,7 @@ describe('models/account', function () {
     'uploadAvatar'
   ];
   var SESSION_TOKEN = 'abc123';
-  var ACCESS_TOKEN = 'access123';
+  //var ACCESS_TOKEN = 'access123';
   var UID = '6d940dd41e636cc156074109b8092f96';
   var URL = 'http://127.0.0.1:1112/avatar/example.jpg';
 
@@ -2060,7 +2058,7 @@ describe('models/account', function () {
         });
     });
   });
-
+  /*
   describe('fetchDevices', function () {
     beforeEach(function () {
       account.set('sessionToken', SESSION_TOKEN);
@@ -2284,7 +2282,7 @@ describe('models/account', function () {
       });
     });
   });
-
+  */
   describe('resetPassword', function () {
     var relier;
 

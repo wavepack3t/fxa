@@ -14,7 +14,7 @@ module.exports = function (grunt) {
   grunt.registerTask('l10n-localize-js', 'Generate localized versions of the Javascript', function () {
     // server config is set in the selectconfig task\
     var done = this.async();
-    var supportedLanguages = grunt.config.get('server.i18n.supportedLanguages');
+    /*var supportedLanguages = grunt.config.get('server.i18n.supportedLanguages');
     var i18n = require('../server/lib/i18n')(grunt.config.get('server.i18n'));
 
     var jsDir = path.join(grunt.config('yeoman.dist'), `bundle-${versionInfo.commit}`);
@@ -35,7 +35,7 @@ module.exports = function (grunt) {
           return contents.replace(/__translations__:\s*{},/, '__translations__:' + JSON.stringify(translations) + ',');
         }
       });
-    });
+    });*/
 
     done();
 

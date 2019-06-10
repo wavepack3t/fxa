@@ -78,13 +78,13 @@ var View = FormView.extend({
     const selectedValue = this.$('input[name=disconnect-reasons]:checked').val();
     this.logViewEvent('submit.' + selectedValue);
 
-    return this.user.destroyAccountClient(this.user.getSignedInAccount(), client)
+    return this.user.destroyAccountAttachedClient(this.user.getSignedInAccount(), client)
       .then(() => {
         this.logFlowEvent(`timing.clients.disconnect.${Date.now() - start}`);
         // user has disconnect the device
         this.hasDisconnected = true;
         this.reasonHelp = REASON_HELP[selectedValue];
-        if (client.get('isCurrentDevice')) {
+        if (client.get('isCurrentSession')) {
           // if disconnected the current device, the user is automatically signed out
           this.navigateToSignIn();
         } else if (this.reasonHelp) {

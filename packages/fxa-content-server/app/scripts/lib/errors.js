@@ -252,6 +252,7 @@ export default {
 
   normalizeXHRError (xhr) {
     var err;
+    console.log("XHR ERROR", xhr);
 
     if (! xhr || xhr.status === 0) {
       err = this.toError('SERVICE_UNAVAILABLE');

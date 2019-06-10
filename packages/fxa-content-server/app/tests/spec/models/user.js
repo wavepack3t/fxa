@@ -7,16 +7,14 @@ import { assert } from 'chai';
 import AuthErrors from 'lib/auth-errors';
 import Constants from 'lib/constants';
 import helpers from '../../lib/helpers';
-import Device from 'models/device';
+//import AttachedClient from 'models/attached-client';
 import AttachedClients from 'models/attached-clients';
 import FxaClient from 'lib/fxa-client';
 import Notifier from 'lib/channels/notifier';
-import OAuthApp from 'models/oauth-app';
 import SentryMetrics from 'lib/sentry';
 import sinon from 'sinon';
 import Storage from 'lib/storage';
 import User from 'models/user';
-import WebSession from 'models/web-session';
 
 const { createUid } = helpers;
 
@@ -1027,7 +1025,7 @@ describe('models/user', function () {
       assert.isTrue(account.fetchOAuthApps.calledWith(oAuthApps));
     });
   });
-
+  /*
   describe('destroyAccountDevice', function () {
     var account;
     var device;
@@ -1137,7 +1135,7 @@ describe('models/user', function () {
       assert.isTrue(account.destroyOAuthApp.calledWith(oAuthApp));
     });
   });
-
+  */
   describe('checkAccountUidExists', function () {
     var account;
     var exists;

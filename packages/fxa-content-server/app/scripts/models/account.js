@@ -16,7 +16,6 @@ import ProfileErrors from '../lib/profile-errors';
 import ProfileImage from './profile-image';
 import ResumeTokenMixin from './mixins/resume-token';
 import SignInReasons from '../lib/sign-in-reasons';
-import UserAgent from '../lib/user-agent';
 import vat from '../lib/vat';
 
 // Account attributes that can be persisted
@@ -925,31 +924,66 @@ const Account = Backbone.Model.extend({
   },
 
   /**
-     * Fetch the account's device list and populate into the collection
+     * Fetch the account's list of attached clients.
      *
-     * @returns {Promise} - resolves when complete
+     * @returns {Promise} - resolves with a list of `AttachedClient` attribute sets when complete.
+     *
+     * XXX TODO: as follow-up work, we can remove the two `fetchAccountX`
+     * methods below, which are subsumed by this new method. It has to wait
+     * until successful rollout of the new combined route.
      */
-  fetchDevices () {
-    return this._fxaClient.deviceList(this.get('sessionToken'))
-      .then((devices) => {
-        devices.map((item) => {
-          item.clientType = Constants.CLIENT_TYPE_DEVICE;
+  fetchAttachedClients() {
+    return this._fxaClient.attachedClients(this.get('sessionToken'))
+      .catch((err) => {
+        // Maybe the new endpoint isn't live yet? Fall back to the old method.
+        if (! err || err.code !== 404) {
+          throw err;
+        }
+        return Promise.all([
+          this.fetchAttachedClientDevicesAndSessions(),
+          this.fetchAttachedClientOAuthApps(),
+        ]).then(([devicesAndSessions, oauthApps]) => {
+          return [...devicesAndSessions, ...oauthApps];
         });
-
-        return devices;
       });
   },
 
   /**
-     * Fetch the account's OAuth Apps and populate into the collection
+     * Fetch the account's devices + sessions, as a list of AttachedClient attribute sets.
      *
      * @returns {Promise} resolves when the action completes
      */
-  fetchOAuthApps () {
+  fetchAttachedClientDevicesAndSessions () {
+    return this._fxaClient.sessions(this.get('sessionToken'))
+      .then((sessions) => {
+        return sessions.map((item) => {
+          return {
+            approximateLastAccessTime: item.approximateLastAccessTime,
+            approximateLastAccessTimeFormatted: item.approximateLastAccessTimeFormatted,
+            deviceId: item.deviceId,
+            deviceType: item.deviceType,
+            isCurrentSession: item.isCurrentDevice,
+            lastAccessTime: item.lastAccessTime,
+            lastAccessTimeFormatted: item.lastAccessTimeFormatted,
+            location: item.location,
+            name: item.deviceName,
+            sessionTokenId: item.id,
+            userAgent: item.userAgent,
+          };
+        });
+      });
+  },
+
+  /**
+   * Fetch the account's OAuth Apps, as a list of AttachedClient attribute sets.
+   *
+   * @returns {Promise} resolves when the action completes
+   */
+  fetchAttachedClientOAuthApps() {
     return this._oAuthClient.fetchOAuthApps(this.get('accessToken'))
       .catch((err) => {
         if (OAuthErrors.is(err, 'UNAUTHORIZED')) {
-          // the accessToken is short lived.
+          // the accessToken is short-lived.
           // retry once with a fresh token.
           return this._fetchProfileOAuthToken().then(() => {
             return this._oAuthClient.fetchOAuthApps(this.get('accessToken'));
@@ -959,84 +993,89 @@ const Account = Backbone.Model.extend({
         throw err;
       })
       .then((oAuthApps) => {
-        oAuthApps.map((item) => {
-          item.clientType = Constants.CLIENT_TYPE_OAUTH_APP;
-          item.isOAuthApp = true;
+        return oAuthApps.map((item) => {
+          return {
+            clientId: item.id,
+            lastAccessTime: item.lastAccessTime,
+            lastAccessTimeFormatted: item.lastAccessTimeFormatted,
+            name: item.name,
+            scope: item.scope,
+          };
         });
-
-        return oAuthApps;
       });
   },
 
   /**
-     * Fetch the account's sessions + devices, populate into the collection
-     *
-     * @returns {Promise} resolves when the action completes
-     */
-  fetchSessions () {
-    return this._fxaClient.sessions(this.get('sessionToken'))
-      .then((sessions) => {
-        sessions.map((item) => {
-          if (item.isDevice) {
-            item.clientType = Constants.CLIENT_TYPE_DEVICE;
-            // override the item id as deviceId for consistency
-            // if you ever need the tokenId just add it here with a different name
-            item.id = item.deviceId;
-            item.name = item.deviceName;
-            item.type = item.deviceType;
-          } else {
-            item.clientType = Constants.CLIENT_TYPE_WEB_SESSION;
-            item.isWebSession = true;
-          }
+   * Disconnect a client from the account
+   *
+   * @param {Object} client - AttachedClient model to remove
+   * @returns {Promise} - resolves when complete
+   *
+   * XXX TODO: as follow-up work, we can remove the three `destroyX`
+   * methods below, which are subsumed by this new method. It has to wait
+   * until successful rollout of the new combined route.
+   */
+  destroyAttachedClient(client) {
+    const ids = client.pick('deviceId', 'sessionTokenId', 'clientId', 'refreshTokenId');
+    const sessionToken = this.get('sessionToken');
 
-          item.genericOS = UserAgent.toGenericOSName(item.os);
-        });
-
-        return sessions;
+    return this._fxaClient.attachedClientDestroy(sessionToken, ids)
+      .catch((err) => {
+        // Maybe the new endpoint isn't live yet? Fall back to the old method.
+        if (! err || err.code !== 404) {
+          throw err;
+        }
+        const clientType = client.get('clientType');
+        if (clientType === Constants.CLIENT_TYPE_DEVICE) {
+          return this.destroyDevice(client);
+        } else if (clientType === Constants.CLIENT_TYPE_WEB_SESSION)  {
+          return this.destroySession(client);
+        } else {
+          return this.destroyOAuthApp(client);
+        }
+      })
+      .then(() => {
+        // XXX TODO: I guess this triggers some notification to the containing collection?
+        client.destroy();
       });
   },
 
   /**
      * Delete the device from the account
      *
-     * @param {Object} device - Device model to remove
+     * @param {Object} device - AttachedClient model for device to remove
      * @returns {Promise} - resolves when complete
      */
   destroyDevice (device) {
-    const deviceId = device.get('id');
+    const deviceId = device.get('deviceId');
     const sessionToken = this.get('sessionToken');
 
-    return this._fxaClient.deviceDestroy(sessionToken, deviceId)
-      .then(function () {
-        device.destroy();
-      });
+    return this._fxaClient.deviceDestroy(sessionToken, deviceId);
   },
 
   /**
      * Destroy another session.
      *
-     * @param {Object} session to destroy.
+     * @param {Object} session - AttachedClient model for session to destroy.
      * @returns {Promise}
      */
   destroySession (session) {
-    const tokenId = session.get('id');
+    const tokenId = session.get('sessionTokenId');
     const sessionToken = this.get('sessionToken');
 
     return this._fxaClient.sessionDestroy(sessionToken, {
       customSessionToken: tokenId
-    }).then(() => {
-      session.destroy();
     });
   },
 
   /**
      * Delete the device from the account
      *
-     * @param {Object} oAuthApp - OAuthApp model to remove
+     * @param {Object} oAuthApp - AttachedClient model for oauth app to remove
      * @returns {Promise} - resolves when complete
      */
   destroyOAuthApp (oAuthApp) {
-    const oAuthAppId = oAuthApp.get('id');
+    const oAuthAppId = oAuthApp.get('clientId');
     const accessToken = this.get('accessToken');
 
     return this._oAuthClient.destroyOAuthApp(accessToken, oAuthAppId)
@@ -1048,11 +1087,7 @@ const Account = Backbone.Model.extend({
             return this._oAuthClient.destroyOAuthApp(accessToken, oAuthAppId);
           });
         }
-
         throw err;
-      })
-      .then(() => {
-        oAuthApp.destroy();
       });
   },
 

@@ -3,25 +3,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { assert } from 'chai';
-import App from 'models/oauth-app';
+import AttachedClient from 'models/attached-client';
 import sinon from 'sinon';
 
-describe('models/oauth-app', function () {
-  var app;
+describe('models/attached-client', function () {
+  var client;
 
   beforeEach(function () {
-    app = new App();
+    client = new AttachedClient();
   });
 
   describe('destroy', function () {
     beforeEach(function () {
-      sinon.spy(app, 'trigger');
+      sinon.spy(client, 'trigger');
 
-      app.destroy();
+      client.destroy();
     });
 
     it('triggers a `destroy` message', function () {
-      assert.isTrue(app.trigger.calledWith('destroy'));
+      assert.isTrue(client.trigger.calledWith('destroy'));
     });
   });
 });
