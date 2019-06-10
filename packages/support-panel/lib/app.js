@@ -9,6 +9,7 @@ const logging = require("./logging");
 const mustache = require("mustache");
 const config = require("./config").getProperties();
 const Raven = require("raven");
+const version = require("./version");
 
 const pageTemplate = fs.readFileSync(path.join(__dirname, "templates/index.html"), {encoding: "UTF-8"});
 mustache.parse(pageTemplate);
@@ -24,6 +25,11 @@ const app = express();
 
 app.get("/__lbheartbeat__", (req, res) => {
   res.status(200).json({});
+})
+
+app.get("/__version__", (req, res) => {
+  res.charset = 'utf-8';
+  res.type('json').send(JSON.stringify(version, null, 2) + '\n');
 })
 
 app.get("/", (req, res) => {
