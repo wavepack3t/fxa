@@ -21,7 +21,7 @@ const path = require('path');
 
 const UNKNOWN = 'unknown';
 
-const versionJsonPath = '../../config/version.json';
+const versionJsonPath = '../config/version.json';
 
 // commitHash and sourceRepo
 function getCommitHash () {
