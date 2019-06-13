@@ -79,7 +79,6 @@ export default BaseAuthenticationBroker.extend({
   initialize (options) {
     options = options || {};
 
-    this.session = options.session;
     this._scopedKeys = ScopedKeys;
     this._metrics = options.metrics;
 
@@ -258,20 +257,15 @@ export default BaseAuthenticationBroker.extend({
     // If the user replaces the current tab with the verification url,
     // finish the OAuth flow.
     return Promise.resolve().then(() => {
-      var relier = this.relier;
-      this.session.set('oauth', {
-        access_type: relier.get('access_type'), //eslint-disable-line camelcase
-        action: relier.get('action'),
-        client_id: relier.get('clientId'), //eslint-disable-line camelcase,
-        code_challenge: relier.get('codeChallenge'), //eslint-disable-line camelcase
-        code_challenge_method: relier.get('codeChallengeMethod'), //eslint-disable-line camelcase
-        keys: relier.get('keys'),
-        scope: relier.get('scope'),
-        state: relier.get('state')
-      });
+      this.relier.persistVerificationData();
       this.setOriginalTabMarker();
       return proto.persistVerificationData.call(this, account);
     });
+  },
+
+  unpersistVerificationData (account) {
+    this.relier.unpersistVerificationData();
+    return proto.unpersistVerificationData.call(this, account);
   },
 
   /**
@@ -295,9 +289,8 @@ export default BaseAuthenticationBroker.extend({
   },
 
   finishOAuthFlow (account, additionalResultData) {
-    this.session.clear('oauth');
-
     return Promise.resolve().then(() => {
+      this.unpersistVerificationData(account);
       // There are no ill side effects if the Original Tab Marker is
       // cleared in the a tab other than the original. Always clear it just
       // to make sure the bases are covered.

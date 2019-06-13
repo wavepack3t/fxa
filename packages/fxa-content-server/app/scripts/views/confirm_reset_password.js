@@ -12,7 +12,6 @@ import PasswordResetMixin from './mixins/password-reset-mixin';
 import OpenResetPasswordEmailMixin from './mixins/open-webmail-mixin';
 import ResendMixin from './mixins/resend-mixin';
 import ServiceMixin from './mixins/service-mixin';
-import Session from '../lib/session';
 import Template from 'templates/confirm_reset_password.mustache';
 import { VERIFICATION_POLL_IN_MS } from '../lib/constants';
 
@@ -179,8 +178,6 @@ const View = BaseView.extend({
     // user verified in a different browser, make them sign in. OAuth
     // users will be redirected back to the RP, Sync users will be
     // taken to the Sync controlled completion page.
-    Session.clear();
-
     const options = {};
 
     if (! this.model.get('hasRecoveryKey')) {

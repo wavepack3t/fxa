@@ -11,7 +11,6 @@ import $ from 'jquery';
 import AuthErrors from './auth-errors';
 import Constants from './constants';
 import RecoveryKey from './crypto/recovery-keys';
-import Session from './session';
 import SignInReasons from './sign-in-reasons';
 import VerificationReasons from './verification-reasons';
 import VerificationMethods from './verification-methods';
@@ -540,7 +539,6 @@ FxaClientWrapper.prototype = {
 
     return client.passwordForgotSendCode(email, clientOptions)
       .then(function (result) {
-        Session.clear();
         return result;
       });
   }),

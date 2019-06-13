@@ -4,7 +4,6 @@
 
 import {assert} from 'chai';
 import AuthorityBroker from 'models/auth_brokers/pairing/authority';
-import Session from 'lib/session';
 import Notifier from 'lib/channels/notifier';
 import Relier from 'models/reliers/relier';
 import sinon from 'sinon';
@@ -45,7 +44,6 @@ describe('views/pair/auth_wait_for_supp', () => {
       config,
       notifier,
       relier,
-      session: Session,
       window: windowMock,
     });
     broker.set('remoteMetaData', REMOTE_METADATA);

@@ -7,7 +7,6 @@ import { assert } from 'chai';
 import AuthorityRelier from 'models/reliers/pairing/authority';
 import OAuthErrors from 'lib/oauth-errors';
 import OAuthClient from 'lib/oauth-client';
-import Session from 'lib/session';
 import sinon from 'sinon';
 import TestHelpers from '../../../../lib/helpers';
 import WindowMock from '../../../../mocks/window';
@@ -43,7 +42,6 @@ describe('models/reliers/pairing/authority', () => {
     relier = new AuthorityRelier({}, {
       config: {},
       oAuthClient: oAuthClient,
-      session: Session,
       window: windowMock
     });
   });
@@ -55,7 +53,7 @@ describe('models/reliers/pairing/authority', () => {
         code: '123',
         redirect_uri: SERVER_REDIRECT_URI, // eslint-disable-line camelcase
       });
-      Session.set('oauth', RESUME_INFO);
+      windowMock.sessionStorage.setItem('oauth', JSON.stringify(RESUME_INFO));
 
       return relier.fetch()
         .then(assert.fail, (err) => {
@@ -71,7 +69,7 @@ describe('models/reliers/pairing/authority', () => {
         code: '123',
         redirect_uri: SERVER_REDIRECT_URI, // eslint-disable-line camelcase
       });
-      Session.set('oauth', RESUME_INFO);
+      windowMock.sessionStorage.setItem('oauth', JSON.stringify(RESUME_INFO));
 
       sinon.spy(relier, 'importSearchParamsUsingSchema');
       return relier.fetch()

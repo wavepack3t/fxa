@@ -83,7 +83,6 @@ var OAuthRelier = Relier.extend({
 
     this._config = options.config;
     this._oAuthClient = options.oAuthClient;
-    this._session = options.session;
   },
 
   fetch () {
@@ -151,8 +150,15 @@ var OAuthRelier = Relier.extend({
     return /oauth\/success/.test(this.window.location.pathname);
   },
 
+  unpersistVerificationData () {
+    this.window.sessionStorage.removeItem('oauth');
+  },
+
   _setupVerificationFlow () {
-    var resumeObj = this._session.oauth;
+    const storedVerificationData = this.window.sessionStorage.getItem('oauth');
+    let resumeObj = storedVerificationData && JSON.parse(storedVerificationData);
+    this.unpersistVerificationData();
+
     if (! resumeObj) {
       // The user is verifying in a second browser. `service` is
       // available in the link. Use it to populate the `service`
@@ -164,10 +170,25 @@ var OAuthRelier = Relier.extend({
       };
     }
 
-    var result = Transform.transformUsingSchema(
+    const result = Transform.transformUsingSchema(
       resumeObj, VERIFICATION_INFO_SCHEMA, OAuthErrors);
 
     this.set(result);
+  },
+
+  persistVerificationData () {
+    // If the user replaces the current tab with the verification url,
+    // finish the OAuth flow.
+    this.window.sessionStorage.setItem('oauth', JSON.stringify({
+      access_type: this.get('access_type'), //eslint-disable-line camelcase
+      action: this.get('action'),
+      client_id: this.get('clientId'), //eslint-disable-line camelcase,
+      code_challenge: this.get('codeChallenge'), //eslint-disable-line camelcase
+      code_challenge_method: this.get('codeChallengeMethod'), //eslint-disable-line camelcase
+      keys: this.get('keys'),
+      scope: this.get('scope'),
+      state: this.get('state')
+    }));
   },
 
   _setupSignInSignUpFlow () {

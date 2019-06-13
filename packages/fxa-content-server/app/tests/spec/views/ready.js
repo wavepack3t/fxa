@@ -10,7 +10,6 @@ import VerificationReasons from 'lib/verification-reasons';
 import FxaClient from 'lib/fxa-client';
 import Notifier from 'lib/channels/notifier';
 import OAuthBroker from 'models/auth_brokers/oauth-redirect';
-import Session from 'lib/session';
 import sinon from 'sinon';
 import SyncRelier from 'models/reliers/sync';
 import View from 'views/ready';
@@ -37,7 +36,6 @@ describe('views/ready', function () {
     });
     broker = new OAuthBroker({
       relier: relier,
-      session: Session,
       window: windowMock
     });
     fxaClient = new FxaClient();

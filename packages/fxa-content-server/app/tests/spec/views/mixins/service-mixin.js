@@ -9,7 +9,6 @@ import Cocktail from 'cocktail';
 import NullBroker from 'models/auth_brokers/base';
 import OAuthRelier from 'models/reliers/oauth';
 import ServiceMixin from 'views/mixins/service-mixin';
-import Session from 'lib/session';
 import sinon from 'sinon';
 import WindowMock from '../../../mocks/window';
 
@@ -44,7 +43,6 @@ describe('views/mixins/service-mixin', () => {
 
     broker = new NullBroker({
       relier: relier,
-      session: Session
     });
 
     view = new OAuthView({

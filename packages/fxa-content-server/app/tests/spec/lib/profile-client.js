@@ -4,7 +4,6 @@
 
 import chai from 'chai';
 import ProfileClient from 'lib/profile-client';
-import Session from 'lib/session';
 import sinon from 'sinon';
 
 var PROFILE_URL = 'http://127.0.0.1:1111';
@@ -20,7 +19,6 @@ describe('lib/profile-client', function () {
   beforeEach(function () {
     server = sinon.fakeServer.create();
     server.autoRespond = true;
-    Session.clear();
 
     client = new ProfileClient({
       profileUrl: PROFILE_URL
@@ -29,7 +27,6 @@ describe('lib/profile-client', function () {
 
   afterEach(function () {
     server.restore();
-    Session.clear();
   });
 
   describe('profile-client', function () {

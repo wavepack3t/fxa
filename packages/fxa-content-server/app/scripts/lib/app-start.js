@@ -40,7 +40,6 @@ import Router from './router';
 import SameBrowserVerificationModel from '../models/verification/same-browser';
 import ScreenInfo from './screen-info';
 import SentryMetrics from './sentry';
-import Session from './session';
 import Storage from './storage';
 import StorageMetrics from './storage-metrics';
 import SupplicantRelier from '../models/reliers/pairing/supplicant';
@@ -246,7 +245,6 @@ Start.prototype = {
           isVerification: this._isVerification(),
           oAuthClient: this._oAuthClient,
           sentryMetrics: this._sentryMetrics,
-          session: Session,
           window: this._window
         });
       } else if (this._isServiceSync()) {
@@ -288,7 +286,6 @@ Start.prototype = {
         notifier: this._notifier,
         oAuthClient: this._oAuthClient,
         relier: this._relier,
-        session: Session,
         window: this._window
       });
 
@@ -428,7 +425,6 @@ Start.prototype = {
       notifier: this._notifier,
       relier: this._relier,
       sentryMetrics: this._sentryMetrics,
-      session: Session,
       subscriptionsManagementEnabled: subscriptionsEnabled,
       subscriptionsManagementLanguages,
       translator: this._translator,
@@ -697,29 +693,18 @@ Start.prototype = {
   },
 
   _isOAuth () {
-    // signin/signup/force_auth
+    // signin/signup/force_auth use client_id, verification does not
     return !! (this._searchParam('client_id') ||
-               // verification
-               this._isOAuthVerificationSameBrowser()) ||
-               this._isOAuthVerificationDifferentBrowser() ||
+               this._isOAuthVerification() ||
                // any URL with 'oauth' in the path.
-               /oauth/.test(this._window.location.pathname);
+               /oauth/.test(this._window.location.pathname));
   },
 
   _isAtCookiesDisabled () {
     return this._window.location.pathname === '/cookies_disabled';
   },
 
-  _getSavedClientId () {
-    return Session.oauth && Session.oauth.client_id;
-  },
-
-  _isOAuthVerificationSameBrowser () {
-    return this._isVerification() &&
-           this._isService(this._getSavedClientId());
-  },
-
-  _isOAuthVerificationDifferentBrowser () {
+  _isOAuthVerification () {
     return this._isVerification() && this._isServiceOAuth();
   },
 

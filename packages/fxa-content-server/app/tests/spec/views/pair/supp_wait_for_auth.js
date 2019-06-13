@@ -5,7 +5,6 @@
 import {assert} from 'chai';
 import Notifier from 'lib/channels/notifier';
 import Relier from 'models/reliers/relier';
-import Session from 'lib/session';
 import { mockPairingChannel } from 'tests/mocks/pair';
 import sinon from 'sinon';
 import SupplicantBroker from 'models/auth_brokers/pairing/supplicant';
@@ -51,7 +50,6 @@ describe('views/pair/supp_wait_for_auth', () => {
       importPairingChannel: mockPairingChannel,
       notifier,
       relier,
-      session: Session,
       window: windowMock,
     });
     broker.set('remoteMetaData', REMOTE_METADATA);

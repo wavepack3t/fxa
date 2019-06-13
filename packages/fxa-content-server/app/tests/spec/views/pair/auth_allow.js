@@ -8,7 +8,6 @@ import { assert } from 'chai';
 import AuthorityBroker from 'models/auth_brokers/pairing/authority';
 import Notifier from 'lib/channels/notifier';
 import Relier from 'models/reliers/relier';
-import Session from 'lib/session';
 import sinon from 'sinon';
 import User from 'models/user';
 import View from 'views/pair/auth_allow';
@@ -64,7 +63,6 @@ describe('views/pair/auth_allow', () => {
       config,
       notifier,
       relier,
-      session: Session,
       window: windowMock,
     });
     broker.set('remoteMetaData', REMOTE_METADATA);

@@ -10,7 +10,6 @@ import FormView from './form';
 import PasswordResetMixin from './mixins/password-reset-mixin';
 import preventDefaultThen from './decorators/prevent_default_then';
 import ServiceMixin from './mixins/service-mixin';
-import Session from '../lib/session';
 import Template from 'templates/reset_password.mustache';
 
 const t = msg => msg;
@@ -85,8 +84,6 @@ const ResetPasswordView = FormView.extend({
   _resetPassword (email) {
     return this.resetPassword(email)
       .catch((err) => {
-        // clear oauth session
-        Session.clear('oauth');
         if (AuthErrors.is(err, 'UNKNOWN_ACCOUNT')) {
           err.forceMessage = t('Unknown account. <a href="/signup">Sign up</a>');
           return this.unsafeDisplayError(err);

@@ -26,7 +26,6 @@ import EmailsView from './settings/emails';
 import LoadingMixin from './mixins/loading-mixin';
 import 'modal';
 import preventDefaultThen from './decorators/prevent_default_then';
-import Session from '../lib/session';
 import SettingsHeaderTemplate from 'templates/partial/settings-header.mustache';
 import SignedOutNotificationMixin from './mixins/signed-out-notification-mixin';
 import SubPanels from './sub_panels';
@@ -93,7 +92,6 @@ const View = BaseView.extend({
     } else if (uid) {
       // session is expired or user does not exist. Force the user
       // to sign in.
-      Session.clear();
       this.user.clearSignedInAccount();
       this.logViewEvent('signout.forced');
     }

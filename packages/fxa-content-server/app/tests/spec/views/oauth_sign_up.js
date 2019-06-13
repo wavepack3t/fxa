@@ -10,7 +10,6 @@ import Notifier from 'lib/channels/notifier';
 import OAuthBroker from 'models/auth_brokers/oauth-redirect';
 import OAuthClient from 'lib/oauth-client';
 import OAuthRelier from 'models/reliers/oauth';
-import Session from 'lib/session';
 import SentryMetrics from 'lib/sentry';
 import sinon from 'sinon';
 import TestHelpers from '../../lib/helpers';
@@ -53,7 +52,6 @@ describe('views/sign_up for /oauth/signup', function () {
   var windowMock;
 
   beforeEach(function () {
-    Session.clear();
     email = TestHelpers.createEmail();
 
     windowMock = new WindowMock();
@@ -71,7 +69,6 @@ describe('views/sign_up for /oauth/signup', function () {
     });
     broker = new OAuthBroker({
       relier: relier,
-      session: Session,
       window: windowMock
     });
 
@@ -107,7 +104,6 @@ describe('views/sign_up for /oauth/signup', function () {
   });
 
   afterEach(function () {
-    Session.clear();
     view.remove();
     view.destroy();
   });

@@ -6,7 +6,6 @@ import { assert } from 'chai';
 import OAuthBroker from 'models/auth_brokers/oauth-redirect';
 import OAuthClient from 'lib/oauth-client';
 import OAuthRelier from 'models/reliers/oauth';
-import Session from 'lib/session';
 import SentryMetrics from 'lib/sentry';
 import Metrics from 'lib/metrics';
 import Notifier from 'lib/channels/notifier';
@@ -37,7 +36,6 @@ describe('views/authorization', function () {
     relier.set('serviceName', CLIENT_NAME);
     broker = new OAuthBroker({
       relier: relier,
-      session: Session,
       window: windowMock
     });
     notifier = new Notifier();
@@ -82,7 +80,6 @@ describe('views/authorization', function () {
       });
       broker = new OAuthBroker({
         relier: relier,
-        session: Session,
         window: windowMock
       });
       initView();
@@ -100,7 +97,6 @@ describe('views/authorization', function () {
       });
       broker = new OAuthBroker({
         relier: relier,
-        session: Session,
         window: windowMock
       });
       initView();

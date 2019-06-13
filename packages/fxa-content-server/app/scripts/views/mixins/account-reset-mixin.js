@@ -14,12 +14,6 @@ import preventDefaultThen from '../decorators/prevent_default_then';
 const t = msg => msg;
 
 var AccountResetMixin = {
-  initialize (options) {
-    options = options || {};
-
-    this._session = options.session;
-  },
-
   events: {
     'click a[href="/confirm_reset_password"]':
         preventDefaultThen('sendAccountResetEmail')
@@ -51,7 +45,6 @@ var AccountResetMixin = {
   sendAccountResetEmail () {
     return this.resetPassword(this._resetAccount.get('email'))
       .catch((err) => {
-        this._session.clear('oauth');
         this.displayError(err);
       });
   }

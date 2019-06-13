@@ -11,7 +11,6 @@ import Metrics from 'lib/metrics';
 import Notifier from 'lib/channels/notifier';
 import Relier from 'models/reliers/relier';
 import { CONFIRM_SIGNIN, CONFIRM_SIGNUP } from '../../../../tests/functional/lib/selectors';
-import Session from 'lib/session';
 import SessionVerificationPoll from 'models/polls/session-verification';
 import sinon from 'sinon';
 import TestHelpers from '../../lib/helpers';
@@ -50,7 +49,6 @@ describe('views/confirm', function () {
 
     broker = new BaseBroker({
       relier: relier,
-      session: Session,
       window: windowMock
     });
 

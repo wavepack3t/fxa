@@ -18,7 +18,6 @@ import Metrics from 'lib/metrics';
 import Notifier from 'lib/channels/notifier';
 import p from 'lib/promise';
 import Relier from 'models/reliers/sync';
-import Session from 'lib/session';
 import sinon from 'sinon';
 import TestHelpers from '../../lib/helpers';
 import Translator from 'lib/translator';
@@ -211,7 +210,6 @@ describe('views/sign_up', function () {
 
     it('shows unchecked `customize sync` checkbox when service is sync even after session is cleared', function () {
       relier.set('service', 'sync');
-      Session.clear();
 
       return view.render()
         .then(function () {

@@ -5,9 +5,6 @@
 mocha.setup('bdd');
 mocha.timeout(20000);
 
-//import Translator from 'lib/app-start';
-import Session from 'lib/session';
-
 // The tests need to be included using `require` instead
 // of import otherwise `describe` and other mocha methods are
 // undefined when the modules are imported.
@@ -62,7 +59,6 @@ require('./spec/lib/profile-client');
 require('./spec/lib/router');
 require('./spec/lib/screen-info');
 require('./spec/lib/sentry');
-require('./spec/lib/session');
 require('./spec/lib/sign-in-reasons');
 require('./spec/lib/storage');
 require('./spec/lib/storage-metrics');
@@ -262,17 +258,6 @@ require('./spec/views/tos');
 require('./spec/views/why_connect_another_device');
 
 const runTests = function () {
-  /**
-   * Ensure session state does not pollute other tests
-   */
-  beforeEach(function () {
-    Session.testClear();
-  });
-
-  afterEach(function () {
-    Session.testClear();
-  });
-
   var runner = mocha.run();
 
   /**

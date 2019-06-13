@@ -11,7 +11,6 @@ import Notifier from 'lib/channels/notifier';
 import OAuthBroker from 'models/auth_brokers/oauth-redirect';
 import OAuthRelier from 'models/reliers/oauth';
 import SentryMetrics from 'lib/sentry';
-import Session from 'lib/session';
 import sinon from 'sinon';
 import TestHelpers from '../../lib/helpers';
 import User from 'models/user';
@@ -48,7 +47,6 @@ describe('views/sign_in for /oauth/signin', function () {
     relier.set('serviceName', CLIENT_NAME);
     broker = new OAuthBroker({
       relier: relier,
-      session: Session,
       window: windowMock
     });
     fxaClient = new FxaClient();
@@ -67,7 +65,6 @@ describe('views/sign_in for /oauth/signin', function () {
   });
 
   afterEach(function () {
-    Session.clear();
     view.destroy();
   });
 

@@ -5,7 +5,6 @@
 // Handle signed-out notifications.
 
 import Notifier from '../../lib/channels/notifier';
-import Session from '../../lib/session';
 import Url from '../../lib/url';
 
 var Mixin = {
@@ -15,7 +14,6 @@ var Mixin = {
 
   clearSessionAndNavigateToSignIn () {
     this.user.clearSignedInAccountUid();
-    Session.clear();
     this.navigateToSignIn();
   },
 

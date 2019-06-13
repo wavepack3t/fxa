@@ -8,7 +8,6 @@ import Constants from 'lib/constants';
 import OAuthClient from 'lib/oauth-client';
 import OAuthErrors from 'lib/oauth-errors';
 import OAuthRelier from 'models/reliers/oauth';
-import Session from 'lib/session';
 import sinon from 'sinon';
 import TestHelpers from '../../../lib/helpers';
 import User from 'models/user';
@@ -66,7 +65,6 @@ describe('models/reliers/oauth', () => {
     relier = new OAuthRelier({}, {
       config: {},
       oAuthClient: oAuthClient,
-      session: Session,
       window: windowMock
     });
   });
@@ -174,13 +172,13 @@ describe('models/reliers/oauth', () => {
     });
 
     describe('verification flow', () => {
-      it('populates OAuth information from Session if verifying in the same browser', () => {
+      it('populates OAuth information from sessionStorage if verifying in the same tab', () => {
         windowMock.location.search = TestHelpers.toSearchString({
           client_id: CLIENT_ID,
           code: '123',
           redirect_uri: QUERY_REDIRECT_URI
         });
-        Session.set('oauth', RESUME_INFO);
+        windowMock.sessionStorage.setItem('oauth', JSON.stringify(RESUME_INFO));
 
         return relier.fetch()
           .then(() => {
@@ -201,7 +199,7 @@ describe('models/reliers/oauth', () => {
         });
         RESUME_INFO.code_challenge = CODE_CHALLENGE;
         RESUME_INFO.code_challenge_method = CODE_CHALLENGE_METHOD;
-        Session.set('oauth', RESUME_INFO);
+        windowMock.sessionStorage.setItem('oauth', JSON.stringify(RESUME_INFO));
 
         return relier.fetch()
           .then(() => {
@@ -322,11 +320,11 @@ describe('models/reliers/oauth', () => {
 
         describe('is missing in verification flow', () => {
           beforeEach(() => {
-            Session.set('oauth', {
+            windowMock.sessionStorage.setItem('oauth', JSON.stringify({
               action: ACTION,
               scope: SCOPE,
               state: STATE
-            });
+            }));
 
             return fetchExpectError({
               code: '123'

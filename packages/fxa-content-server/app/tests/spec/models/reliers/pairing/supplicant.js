@@ -6,7 +6,6 @@ import _ from 'underscore';
 import { assert } from 'chai';
 import OAuthClient from 'lib/oauth-client';
 import OAuthErrors from 'lib/oauth-errors';
-import Session from 'lib/session';
 import sinon from 'sinon';
 import SupplicantRelier from 'models/reliers/pairing/supplicant';
 import TestHelpers from '../../../../lib/helpers';
@@ -53,7 +52,6 @@ describe('models/reliers/pairing/supplicant', () => {
     relier = new SupplicantRelier({}, {
       config: {},
       oAuthClient: oAuthClient,
-      session: Session,
       window: windowMock
     });
   });

@@ -33,7 +33,6 @@ describe('views/mixins/account-reset-mixin', function () {
   var metrics;
   var notifier;
   var relier;
-  var session;
   var view;
 
   beforeEach(function () {
@@ -45,16 +44,12 @@ describe('views/mixins/account-reset-mixin', function () {
     notifier = new Notifier();
     metrics = new Metrics({ notifier });
     relier = new Relier();
-    session = {
-      clear: sinon.spy()
-    };
 
     view = new AccountResetView({
       fxaClient: fxaClient,
       metrics: metrics,
       notifier: notifier,
       relier: relier,
-      session: session,
       viewName: 'delete-account'  // just an example name
     });
 
@@ -107,9 +102,9 @@ describe('views/mixins/account-reset-mixin', function () {
         assert.isTrue(view.isErrorVisible());
       });
 
-      it('clears session.oauth', function () {
+      /* it('clears session.oauth', function () {
         assert.isTrue(session.clear.calledWith('oauth'));
-      });
+      });*/
     });
   });
 });

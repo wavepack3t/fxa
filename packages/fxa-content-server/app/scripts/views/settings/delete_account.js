@@ -7,7 +7,6 @@ import Cocktail from 'cocktail';
 import FormView from '../form';
 import PasswordMixin from '../mixins/password-mixin';
 import ServiceMixin from '../mixins/settings-panel-mixin';
-import Session from '../../lib/session';
 import SettingsPanelMixin from '../mixins/service-mixin';
 import Template from 'templates/settings/delete_account.mustache';
 
@@ -28,7 +27,6 @@ var View = FormView.extend({
 
     return this.user.deleteAccount(account, password)
       .then(() => {
-        Session.clear();
         return this.invokeBrokerMethod('afterDeleteAccount', account);
       })
       .then(() => {

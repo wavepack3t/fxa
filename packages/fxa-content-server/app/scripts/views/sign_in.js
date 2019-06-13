@@ -15,7 +15,6 @@ import PasswordMixin from './mixins/password-mixin';
 import PasswordResetMixin from './mixins/password-reset-mixin';
 import preventDefaultThen from './decorators/prevent_default_then';
 import ServiceMixin from './mixins/service-mixin';
-import Session from '../lib/session';
 import SignedInNotificationMixin from './mixins/signed-in-notification-mixin';
 import SignInMixin from './mixins/signin-mixin';
 import SignInTemplate from 'templates/sign_in.mustache';
@@ -160,7 +159,6 @@ const View = FormView.extend({
     // TODO when the UI allows removal of individual accounts,
     // only clear the current account.
     this.user.removeAllAccounts();
-    Session.clear();
     this.formPrefill.clear();
     this.logViewEvent('use-different-account');
 

@@ -12,7 +12,6 @@ import FormPrefill from 'models/form-prefill';
 import Metrics from 'lib/metrics';
 import Notifier from 'lib/channels/notifier';
 import Relier from 'models/reliers/relier';
-import Session from 'lib/session';
 import { SIGNIN } from '../../../../tests/functional/lib/selectors';
 import sinon from 'sinon';
 import Translator from 'lib/translator';
@@ -61,9 +60,6 @@ describe('views/sign_in', () => {
       metrics,
       notifier
     });
-
-    Session.clear();
-
 
     initView();
 
