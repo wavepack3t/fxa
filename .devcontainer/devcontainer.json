@@ -1,0 +1,21 @@
+{
+    "name": "Firefox Accounts",
+    "dockerFile": "Dockerfile",
+    "runArgs": [
+        "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined",
+        "-v", "/var/run/docker.sock:/var/run/docker.sock",
+        "--network=host",
+        "-u", "fxadev"
+    ],
+    "extensions": [
+        "ms-vscode.vscode-typescript-tslint-plugin",
+        "rbbit.typescript-hero",
+        "waderyan.nodejs-extension-pack",
+        "esbenp.prettier-vscode",
+        "rust-lang.rust",
+        "peterjausovec.vscode-docker",
+        "ms-vsliveshare.vsliveshare",
+        "github.vscode-pull-request-github"
+    ],
+    "postCreateCommand": "npm install"
+}
