@@ -28,7 +28,7 @@
 #![feature(plugin)]
 #![feature(try_from)]
 #![feature(type_ascription)]
-#![plugin(rocket_codegen)]
+#![feature(proc_macro_hygiene, decl_macro)]
 
 extern crate base64;
 extern crate chrono;
@@ -46,11 +46,13 @@ extern crate lazy_static;
 extern crate lettre;
 extern crate lettre_email;
 extern crate md5;
-extern crate mozsvc_common;
+extern crate mozsvc_common_wvp;
 extern crate rand;
 extern crate redis;
 extern crate regex;
 extern crate reqwest;
+//extern crate rocket;
+#[macro_use]
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
@@ -83,7 +85,7 @@ extern crate slog_mozlog_json;
 #[macro_use]
 extern crate slog_scope;
 extern crate slog_term;
-extern crate socketlabs;
+extern crate socketlabz;
 extern crate uuid;
 
 pub mod api;

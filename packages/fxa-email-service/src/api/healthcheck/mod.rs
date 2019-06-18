@@ -10,7 +10,7 @@
 
 use reqwest::Client as RequestClient;
 use rocket::State;
-use rocket_contrib::Json;
+use rocket_contrib::json::Json;
 use serde_json;
 
 use crate::{settings::Settings, types::error::AppResult};
@@ -19,17 +19,17 @@ use crate::{settings::Settings, types::error::AppResult};
 mod test;
 
 #[get("/__version__")]
-fn version() -> Json {
+fn version<T>() -> Json<T> {
     Json(serde_json::from_str(include_str!("../../../version.json")).unwrap())
 }
 
 #[get("/__lbheartbeat__")]
-fn lbheartbeat() -> Json {
+fn lbheartbeat<T>() -> Json<T> {
     Json(json!({}))
 }
 
 #[get("/__heartbeat__")]
-fn heartbeat(settings: State<Settings>) -> AppResult<Json> {
+fn heartbeat(settings: State<Settings>) -> AppResult<Settings> {
     RequestClient::new()
         .get(&format!("{}__heartbeat__", settings.authdb.baseuri))
         .send()

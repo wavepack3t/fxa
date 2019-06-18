@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, you can obtain one at https://mozilla.org/MPL/2.0/.
 
-use socketlabs::{message::Message, request::Request, response::PostMessageErrorCode};
+use socketlabz::{message::Message, request::Request, response::PostMessageErrorCode};
 use uuid::Uuid;
 
 use super::{Headers, Provider};

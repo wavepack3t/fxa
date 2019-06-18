@@ -10,7 +10,7 @@ use rocket::{
     http::Status,
     Data, Request, State,
 };
-use rocket_contrib::Json;
+use rocket_contrib::json::Json;
 
 use crate::{
     db::{auth_db::DbClient, delivery_problems::DeliveryProblems, message_data::MessageData},
@@ -42,7 +42,7 @@ struct Email {
     metadata: Option<String>,
 }
 
-impl FromData for Email {
+impl FromData<'_> for Email {
     type Error = AppError;
 
     fn from_data(request: &Request, data: Data) -> data::Outcome<Self, Self::Error> {
@@ -64,7 +64,7 @@ fn handler(
     logger: State<MozlogLogger>,
     message_data: State<MessageData>,
     providers: State<Providers>,
-) -> AppResult<Json> {
+) -> AppResult<Email> {
     let email = email?;
 
     bounces.check(&email.to)?;

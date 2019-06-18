@@ -1,3 +1,4 @@
+packages/fxa-email-service/*.bak
 loop-server
 syncserver
 selenium-*

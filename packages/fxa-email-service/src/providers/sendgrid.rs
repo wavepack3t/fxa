@@ -4,7 +4,7 @@
 
 use http::StatusCode;
 use sendgrid::v3::{
-    Content, Email as EmailAddress, Personalization, SGMailV3 as Message, V3Sender as Client,
+    Content, Email as EmailAddress, Personalization, Message, Sender as Client,
 };
 
 use super::{Headers, Provider};
