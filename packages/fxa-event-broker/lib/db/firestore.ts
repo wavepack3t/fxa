@@ -1,25 +1,34 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 import { Firestore, Settings } from '@google-cloud/firestore';
 
 import { ClientWebhooks } from '../selfUpdatingService/clientWebhookService';
 import { Datastore } from './index';
 
+type FirestoreDbSettings = Settings & {
+  prefix: string;
+};
+
 class FirestoreDatastore implements Datastore {
   private db: Firestore;
+  private prefix: string;
 
-  constructor(config: Settings, firestore?: Firestore) {
+  constructor(config: FirestoreDbSettings, firestore?: Firestore) {
+    this.prefix = config.prefix;
     if (firestore) {
       this.db = firestore;
     } else {
+      // keyFilename takes precedence over credentials
+      if (config.keyFilename) {
+        delete config.credentials;
+      }
       this.db = new Firestore(config);
     }
   }
 
   public async storeLogin(uid: string, clientId: string) {
-    const document = this.db.doc(`users/${uid}`);
+    const document = this.db.doc(`${this.prefix}users/${uid}`);
     const doc = await document.get();
     if (doc.exists) {
       const data = doc.data();
@@ -32,7 +41,7 @@ class FirestoreDatastore implements Datastore {
   }
 
   public async fetchClientIds(uid: string): Promise<string[]> {
-    const document = this.db.doc(`users/${uid}`);
+    const document = this.db.doc(`${this.prefix}users/${uid}`);
     const doc = await document.get();
     if (doc.exists) {
       const data = doc.data();
@@ -44,8 +53,7 @@ class FirestoreDatastore implements Datastore {
   }
 
   public async fetchClientIdWebhooks(): Promise<ClientWebhooks> {
-    const query = this.db.collection('clients');
-    const results = await query.select('webhookUrl').get();
+    const results = await this.db.collection(`${this.prefix}clients`).get();
     const clientWebhooks: ClientWebhooks = {};
     results.docs.forEach(doc => {
       clientWebhooks[doc.id] = doc.get('webhookUrl');
