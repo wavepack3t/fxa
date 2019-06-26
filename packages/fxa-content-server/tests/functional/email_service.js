@@ -24,6 +24,7 @@ registerSuite('email_service', {
         .then(fillOutSignUp(email, PASSWORD))
         .then(getEmailHeaders(user, 0))
         .then(headers => {
+          console.log('PHIL!', headers['x-email-service'], headers);
           assert.equal(
             headers['x-email-service'],
             'fxa-email-service',
