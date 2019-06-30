@@ -45,7 +45,7 @@ extern crate lazy_static;
 extern crate lettre;
 extern crate lettre_email;
 extern crate md5;
-extern crate mozsvc_common;
+extern crate mozsvc_common_wvp;
 extern crate rand;
 extern crate redis;
 extern crate regex;
@@ -74,7 +74,7 @@ extern crate slog_mozlog_json;
 #[macro_use]
 extern crate slog_scope;
 extern crate slog_term;
-extern crate socketlabs;
+extern crate socketlabz;
 extern crate uuid;
 
 pub mod api;

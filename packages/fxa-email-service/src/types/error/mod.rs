@@ -27,7 +27,7 @@ use rocket_contrib::json::Json;
 use sendgrid::errors::SendgridError;
 use serde::ser::{Serialize, SerializeMap, Serializer};
 use serde_json::{map::Map, ser::to_string, Error as JsonError, Value};
-use socketlabs::error::Error as SocketLabsError;
+use socketlabz::error::Error as SocketLabsError;
 
 use super::email_address::EmailAddress;
 use crate::{db::delivery_problems::DeliveryProblem, logging::MozlogLogger};
